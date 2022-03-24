@@ -7,11 +7,15 @@ sys.path.append(os.path.abspath('../'))
 from database.database import Database
 from features.rsi import RSI
 from features.beta import BetaIndicator
+from features.ema import EmaIndicator
+from features.dmi import DmiIndicator
 
 class DataFetcher:
     """
     Class to collect stock data and calculate indicators daily.
     """
+    test=None
+    tset=None
     def __init__(self):
         """
         Initialize data path, stock config file, and DB connection.
@@ -27,7 +31,7 @@ class DataFetcher:
         # print(self.stocks_data)
         self.db = Database()
         
-    def fetch_data_for_single(self,stock: str ,start_date: str =None) -> pd.DataFrame:
+    def fetch_data_for_single(self,stock: str ,start_date: str =None,end_date: str = None, full: bool=False) -> pd.DataFrame:
         """
         Fetches data for single stock for today from investing.com using investpy
 
@@ -45,8 +49,10 @@ class DataFetcher:
   
         """
         
-        
-        end_date = pd.to_datetime('today') #Collect missing data till today.
+        if not end_date:
+            end_date = pd.to_datetime('today') #Collect missing data till today.
+        else:
+            end_date = pd.to_datetime(end_date)
         if not start_date :
             start_date = end_date + pd.offsets.DateOffset(days=-1) #if no dates given, start data collection from today
         
@@ -75,6 +81,8 @@ class DataFetcher:
         
         # Columns that we are interested in.
         data = self.stock_data.loc[:,['Date','Stock','Close']]   
+        if full:
+            return self.stock_data
         return data
 
     def fetch(self):
@@ -88,6 +96,7 @@ class DataFetcher:
 
         """
         last_date = self.db.get_last_date()
+        last_date = pd.to_datetime('2021-03-23')
         start_date =last_date
         investpy_stocks = self.stocks_data['investpy']
         df = pd.DataFrame()
@@ -107,10 +116,10 @@ class DataFetcher:
         today_data = pd.read_csv('data_today.csv',names=['Date','Stock','Close'])
         self.today = today_data
         print(today_data.Date.iloc[1])
-        start_date = pd.to_datetime(today_data.Date.iloc[1]).strftime('%d/%m/%Y')
+        start_date = pd.to_datetime(today_data.Date.iloc[0]).strftime('%d/%m/%Y')
         end_date = pd.to_datetime(today_data.Date.iloc[-1]).strftime('%d/%m/%Y')
         
-        indicators = { RSI: 'RSI', BetaIndicator:'Beta'} # ,
+        indicators = {DmiIndicator:'DMI'} # RSI: 'RSI',BetaIndicator:'Beta' , EmaIndicator:'Ema'
         
         nse_stocks = self.stocks_data['nse']
         
@@ -122,7 +131,13 @@ class DataFetcher:
                 row = today_data.index[today_data['Stock']==st]
                 print('======',indicators[ind],'\n',row, res,'====')
                 for col in res.columns[1:]:
-                        today_data.at[row,col] = res[col].values[0]
+                        self.tset =  res
+                        # return
+                        self.test = today_data.iloc[row]
+                        
+                        today_data.at[row,col] = res[col].values
+
+                        
 
         print(today_data)     
         today_data.to_csv('data_today.csv',mode='w', index=False)
@@ -142,6 +157,6 @@ class DataFetcher:
 
 
 x = DataFetcher()
-x.fetch()
-x.calculate()
+# x.fetch()
+# x.calculate()
 x.append()

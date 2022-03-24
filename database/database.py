@@ -34,7 +34,7 @@ class Database:
         '''
         
         stock_data.Date = stock_data.Date.apply(
-          lambda date:pd.to_datetime(date, format="%Y-%m-%d")
+          lambda date:pd.to_datetime(date, format="%d-%m-%Y")
           ) #Clean date format
         
         processed_data = stock_data.to_dict('records') # Covert dataframe to dictionary.

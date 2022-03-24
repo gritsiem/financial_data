@@ -14,11 +14,7 @@ import investpy
 
 
 class BetaIndicator:
-    __root_path = os.path.dirname(__file__)
-    __stock_file = ''
-    __ind_file= ''
-    
-        
+   
     def __init__(self):
         '''
         Initialize Beta Indicator class with attributes.
@@ -41,7 +37,7 @@ class BetaIndicator:
         self.data_fetcher=None
         
             
-    def fetch_data(self,stock,index,start_date,end_date):
+    def fetch_data(self,stock: str,index: str,start_date: str,end_date: str)-> None:
         """
         Fetch historical data for stocks and index.
         
@@ -66,24 +62,21 @@ class BetaIndicator:
   
         """       
         
-        # # convert Dates from string to datetime object for calculation purpose.
-        # self.stock_data["Date"]=self.stock_data['Date'].apply(lambda date:pd.to_datetime(date, format="%d-%m-%Y"))
         print("start end", start_date,end_date)
+        
+        # Fetch data for at least a year prior to start date for correct calculation.
         start_date = start_date + pd.offsets.DateOffset(years=-1)
         self.stock_data=self.data_fetcher(stock,start_date)
-        # API call to investpy
+        
+        # API call to investpy for index data
         self.index_data = investpy.indices.get_index_historical_data(index, 'India', start_date.strftime('%d/%m/%Y'), end_date.strftime('%d/%m/%Y'), as_json=False, interval='Daily')
         print(len(self.stock_data),len(self.index_data))
-        # Investpy uses dates to index, but require Date column for test harness purpose.
-        self.index_data["Date"] =self.index_data.index
         
-        # Drop Date as indces and set as number.
+        # Investpy uses dates to index. Restructuring according to dataset.
+        self.index_data["Date"] =self.index_data.index
         self.index_data = self.index_data.reset_index(level=0, drop=True)
 
-        
-        print("\n--------\nindex: ",self.index_data)
-        
-    def __remove_uncommon_dates(self,sdf,idf):
+    def __remove_uncommon_dates(self,sdf: pd.DataFrame ,idf: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame) :
         """
       
 
@@ -102,29 +95,23 @@ class BetaIndicator:
           Index data only containing common dates with stock data
 
         """
+        # Find uncommon dates in the stock and index data if any
         only_stock = sdf["Date"].isin(idf["Date"])==False
         only_ind = idf["Date"].isin(sdf["Date"])==False
-        print("Hey...",len(sdf),len(idf))
-        df = pd.merge(sdf,idf,how="outer")
-        df.to_excel("ugh.xlsx")
+
+        # drop those rows
         sdf.drop(sdf[only_stock].index, inplace=True)
         idf.drop(idf[only_ind].index, inplace=True)
-        
-        print("Hey...",len(sdf),len(idf), sdf, idf)
-        
+                
         return sdf,idf
 
-    def filter_on_dates(self, years, months,start, end):
+    def filter_on_dates(self,start: str, end: str):
         """
         Filters stock data and index data to get required range for calculation.
         Currently index data is fetched in class itself as only beta requires it.
 
         Parameters
         ----------
-        years : number (obsolete)
-          years from end date to go back to.
-        months : number (obsolete)
-          months from end date to go back to for historical data.
         start : string
           start date of format dd/mm/yyy.
         end : string
@@ -160,9 +147,9 @@ class BetaIndicator:
         #gets index for the value which is closest but older than ideal start date.
         from_index = len(td)-1
         to_index = sdf.loc[sdf.Date<=to_date].index[-1]
+        
         print("Including data from date:" , sdf.iloc[from_index].Date,"\nTo Date: ", to_date, sdf.iloc[to_index].Date)
         filtered_sdf, filtered_idf = sdf.iloc[from_index:to_index+1], idf.iloc[from_index:to_index+1]
-        # print( "sanity check" ,idf, filtered_idf)
         return filtered_sdf, filtered_idf
 
     
@@ -270,12 +257,8 @@ class BetaIndicator:
         print(end_date.month_name())
         end_date=end_date.strftime('%d/%m/%Y')
         start_date = start_date.strftime('%d/%m/%Y')
-        # print("\nChosen stock: ",stock,"\nChosen Index: ",index)
-        
 
-        # print("test",self.stock_data)
-
-        st, ind = self.filter_on_dates(None,None,start_date,end_date)
+        st, ind = self.filter_on_dates(start_date,end_date)
         # print("debug st en after filter: ",st,ind)
         # ind = self.index_data
 
@@ -308,12 +291,7 @@ class BetaIndicator:
         
 if  __name__ == "__main__":
     beta = BetaIndicator()
-    
-    # y = beta.get_published_values("BHEL", 'start','30/08/2021')
-    
-    # print(beta.calculate_beta('NTPC','Nifty 50','05/04/2021'))
-    
+
     x = beta.get_indicator_values("BHEL", '05/04/2021','05/04/2021')
-    # print('\n==================\n',x.iloc(0))
     
     
