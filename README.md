@@ -5,6 +5,7 @@ In this project, I aim to perform data handling ( sourcing, cleaning, engineerin
 This project is divided into the following parts:
 1.	Database setup
 2.	Setting up a datastream.
+3.	Exploratory Analysis.
 
 ## Database setup
 
@@ -23,6 +24,13 @@ The process of collecting data is as follows:
 2.	Use the data in the data_today.csv, calculate the engineered features like RSI, Beta and append it to the same file.
 3.	Append the data in data_today.csv
 
-# Some note:
+### Some notes:
 - The features classes have a few common things – get_indicator_values function which returns the calculated values for a stock in the given date range. They also have a data_fetcher which is assigned to them by the daily data collector so that they only need to do calculations and not data fetching.
 -	I have fetched 1 year data to have a good size for visualization, however we can run this script daily to get latest data.
+
+
+## Exploratory Analysis
+
+We look at the nature of our data. For this I have used the folder DataExploration. There are 2 files:
+1.[Closing price analysis](DataExploration/Closing%20price%20analysis.ipynb) - This file explores the stock profile of BHEL data as an example to show the different information we can get out of just the price and date features. 
+2.[Other feature analysis](DataExploration/Other%20features.ipynb) - As we have also calculated values such as RSI, Beta etc, we can explore the nature of these values for refining our features. 
