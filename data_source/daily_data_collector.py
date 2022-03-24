@@ -96,7 +96,6 @@ class DataFetcher:
 
         """
         last_date = self.db.get_last_date()
-        last_date = pd.to_datetime('2021-03-23')
         start_date =last_date
         investpy_stocks = self.stocks_data['investpy']
         df = pd.DataFrame()
