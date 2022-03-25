@@ -32,5 +32,5 @@ The process of collecting data is as follows:
 ## Exploratory Analysis
 
 We look at the nature of our data. For this I have used the folder DataExploration. There are 2 files:
-1.[Closing price analysis](DataExploration/Closing%20price%20analysis.ipynb) - This file explores the stock profile of BHEL data as an example to show the different information we can get out of just the price and date features. 
-2.[Other feature analysis](DataExploration/Other%20features.ipynb) - As we have also calculated values such as RSI, Beta etc, we can explore the nature of these values for refining our features. 
+1.[Closing price analysis](DataExploration/close_price_analysis.ipynb) - This file explores the stock profile of BHEL data as an example to show the different information we can get out of just the price and date features. 
+2.[Other feature analysis](DataExploration/features_analysis.ipynb) - As we have also calculated values such as RSI, Beta etc, we can explore the nature of these values for refining our features. 

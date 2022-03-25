@@ -118,7 +118,7 @@ class DataFetcher:
         start_date = pd.to_datetime(today_data.Date.iloc[0]).strftime('%d/%m/%Y')
         end_date = pd.to_datetime(today_data.Date.iloc[-1]).strftime('%d/%m/%Y')
         
-        indicators = {DmiIndicator:'DMI'} # RSI: 'RSI',BetaIndicator:'Beta' , EmaIndicator:'Ema'
+        indicators = {RSI: 'RSI',BetaIndicator:'Beta' , EmaIndicator:'Ema,'DmiIndicator:'DMI'} # ,BetaIndicator:'Beta' , EmaIndicator:'Ema,'DmiIndicator:'DMI'
         
         nse_stocks = self.stocks_data['nse']
         
